@@ -1,6 +1,6 @@
 # HomeKit Garage Door Opener
 
-ESP32-based Apple HomeKit garage door controller using ESP-IDF and FreeRTOS.
+ESP32C3-based Apple HomeKit garage door controller using ESP-IDF and FreeRTOS.
 
 ---
 
@@ -32,3 +32,7 @@ idf.py flash
   <img src="img/wifi_setup_page1.jpeg" width="48%">
   <img src="img/wifi_setup_page2.jpeg" width="48%">
 </p>
+
+## Assembled Board
+
+<img src="img/PCB.png" width="48%">
