@@ -1,0 +1,15 @@
+{
+  "C_Cpp.intelliSenseEngine": "default",
+  "idf.espIdfPath": "/Users/masonhon/esp/v5.4.2/esp-idf",
+  "idf.pythonInstallPath": "/opt/homebrew/opt/python@3.12/libexec/bin/python",
+  "idf.openOcdConfigs": [
+    "board/esp32c3-builtin.cfg"
+  ],
+  "idf.toolsPath": "/Users/masonhon/.espressif",
+  "idf.customExtraVars": {
+    "IDF_TARGET": "esp32c3"
+  },
+  "idf.port": "/dev/tty.usbmodem21201",
+  "idf.flashType": "JTAG",
+  "idf.currentSetup": "/Users/masonhon/esp/v5.4.2/esp-idf"
+}
