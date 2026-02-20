@@ -24,3 +24,7 @@ This project implements a HomeKit-compatible garage door opener built on ESP32C3
 ```bash
 idf.py build
 idf.py flash
+
+## WiFi Setup Page
+
+![System Architecture](img/wifi_setup_page1.png)![System Architecture](img/wifi_setup_page2.png)
