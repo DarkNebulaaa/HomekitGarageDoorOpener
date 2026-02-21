@@ -15,7 +15,7 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-#define WIFI_SSID "Homekit_GarageDoorOpener"
+#define WIFI_SSID "HOMEKIT_ACCESSORY_CONTROLLER"
 #define WIFI_PASS "hap_esp32"
 
 typedef enum WifiMode {
