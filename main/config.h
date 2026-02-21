@@ -19,7 +19,7 @@ extern const char *TAG;
 /* Reset to factory if button is pressed and held for more than 10 seconds */
 #define RESET_TO_FACTORY_BUTTON_TIMEOUT     5
 
-#define WIFI_SSID "HOMEKIT_ACCESSORY_CONTROLLER"
+#define WIFI_SSID "Homekit_Accessory_Controller"
 #define WIFI_PASS "hap_esp32"
 
 #define FW_VERSION "1.0.4"
