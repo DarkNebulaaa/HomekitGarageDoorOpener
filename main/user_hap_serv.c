@@ -267,8 +267,25 @@ static void hap_event_handler(void* arg, esp_event_base_t event_base, int32_t ev
     if (hap_req_get_ctrl_id(read_priv)) {
         ESP_LOGI(TAG, "Read data !! Received read from %s", hap_req_get_ctrl_id(read_priv));
     }
-    if (!strcmp(hap_char_get_type_uuid(hc), HAP_CHAR_UUID_IN_USE)) {
-        const hap_val_t *cur_val = hap_char_get_val(hc);
+    if (!strcmp(hap_char_get_type_uuid(hc), HAP_CHAR_UUID_OUTLET_IN_USE)) {
+        hap_val_t new_val;
+        new_val.b = gpio_get_level(PLUGIN_GPIO);
+        hap_char_update_val(hc, &new_val);
+        *status_code = HAP_STATUS_SUCCESS;
+    }
+    if (!strcmp(hap_char_get_type_uuid(hc), HAP_CHAR_UUID_ON)){
+        hap_val_t new_val;
+        new_val.b = gpio_get_level(PLUGIN_GPIO);
+        hap_char_update_val(hc, &new_val);
+        *status_code = HAP_STATUS_SUCCESS;
+    }
+    if (!strcmp(hap_char_get_type_uuid(hc), HAP_CHAR_UUID_IN_USE)){
+        hap_val_t new_val;
+        new_val.b = gpio_get_level(PLUGIN_GPIO);
+        hap_char_update_val(hc, &new_val);
+        *status_code = HAP_STATUS_SUCCESS;
+    }
+    if (!strcmp(hap_char_get_type_uuid(hc), HAP_CHAR_UUID_ACTIVE)){
         hap_val_t new_val;
         new_val.b = gpio_get_level(PLUGIN_GPIO);
         hap_char_update_val(hc, &new_val);
@@ -314,26 +331,55 @@ static int watering_write(hap_write_data_t write_data[], int count, void *serv_p
     hap_write_data_t *write;
     for (i = 0; i < count; i++) {
         write = &write_data[i];
-        if (!strcmp(hap_char_get_type_uuid(write->hc), HAP_CHAR_UUID_ACTIVE)) {
+        if (!strcmp(hap_char_get_type_uuid(write->hc), HAP_CHAR_UUID_ON)) {
             ESP_LOGI(TAG, "Received Write. Watering state %s",write->val.b ? "On" : "Off");
             gpio_set_level(PLUGIN_GPIO, write->val.b);
             hap_char_update_val(write->hc, &(write->val));
+            hap_char_update_val(current_watering_state_char, &(write->val));
             *(write->status) = HAP_STATUS_SUCCESS;
         }
-        else if (!strcmp(hap_char_get_type_uuid(write->hc), HAP_CHAR_UUID_IN_USE))
-        {
+        if (!strcmp(hap_char_get_type_uuid(write->hc), HAP_CHAR_UUID_OUTLET_IN_USE)){
             hap_val_t new_val;
             new_val.b = gpio_get_level(PLUGIN_GPIO);
-            ESP_LOGI(TAG, "Received Write. Watering in use %s",new_val.b ? "Yes" : "No");
             hap_char_update_val(write->hc, &new_val);
             *(write->status) = HAP_STATUS_SUCCESS;
         }
-        
-        
+        if (!strcmp(hap_char_get_type_uuid(write->hc), HAP_CHAR_UUID_IN_USE)){
+            hap_val_t new_val;
+            new_val.b = gpio_get_level(PLUGIN_GPIO);
+            hap_char_update_val(write->hc, &new_val);
+            *(write->status) = HAP_STATUS_SUCCESS;
+        }
+        if (!strcmp(hap_char_get_type_uuid(write->hc), HAP_CHAR_UUID_ACTIVE)){
+            hap_val_t new_val;
+            new_val.b = gpio_get_level(PLUGIN_GPIO);
+            hap_char_update_val(write->hc, &new_val);
+            *(write->status) = HAP_STATUS_SUCCESS;
+        }
     }
     return ret;
 }
 
+hap_serv_t *hap_serv_custom_valve_create()
+{
+    hap_serv_t *hs = hap_serv_create(HAP_SERV_UUID_VALVE);
+    if (!hs) {
+        return NULL;
+    }
+    if (hap_serv_add_char(hs, hap_char_valve_type_create(1)) != HAP_SUCCESS) {
+        goto err;
+    }
+    if( hap_serv_add_char(hs, hap_char_in_use_create(0)) != HAP_SUCCESS) {
+        goto err;
+    }
+    if( hap_serv_add_char(hs, hap_char_active_create(0)) != HAP_SUCCESS) {
+        goto err;
+    }
+    return hs;
+err:
+    hap_serv_delete(hs);
+    return NULL;
+} 
 /*The main thread for handling the Fan Accessory */
 static void garage_door_thread_entry(void *p)
 {
@@ -499,17 +545,18 @@ static void watering_thread_entry(void *p)
     hap_acc_add_wifi_transport_service(accessory, 0);
 
     /* Create the Fan Service. Include the "name" since this is a user visible service  */
-    service = hap_serv_valve_create(0, 0, 1);
-    hap_serv_add_char(service, hap_char_name_create("Watering System"));
 
-    /* Set the write callback for the service */
-    hap_serv_set_write_cb(service, watering_write);
-
-    /* Set the read callback for the service (optional) */
-    hap_serv_set_read_cb(service, watering_read);
-
+    service = hap_serv_custom_valve_create();
+    current_watering_state_char = hap_serv_get_char_by_uuid(service, HAP_CHAR_UUID_ACTIVE);
     hap_acc_add_serv(accessory, service);
-
+    service = hap_serv_outlet_create(0,1);
+    hap_serv_add_char(service, hap_char_name_create("Watering System"));
+    hap_serv_set_write_cb(service, watering_write);
+    hap_serv_set_read_cb(service, watering_read);
+    outlet_state_char = hap_serv_get_char_by_uuid(service, HAP_CHAR_UUID_ON);
+     /* Add the service to the Accessory Object */
+    hap_acc_add_serv(accessory, service);
+    
     hap_fw_upgrade_config_t ota_config = {
         .server_cert_pem = server_cert,
     };

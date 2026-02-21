@@ -56,6 +56,8 @@ typedef enum door_state DoorState;
 extern led_strip_handle_t led_strip;
 static hap_char_t *current_door_state_char;
 static hap_char_t *target_door_state_char;
+static hap_char_t *current_watering_state_char;
+static hap_char_t *outlet_state_char;
 
 
 
