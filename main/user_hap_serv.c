@@ -1,7 +1,8 @@
 #include "user_hap_serv.h"
 #include "user_nvs.h"
 #include "esp_system.h"
-
+#include "esp_mac.h"
+#include "stdio.h"
 led_strip_handle_t led_strip;
 DoorState State, Priv_State;
 //指示燈初始化
@@ -395,6 +396,12 @@ err:
 /*The main thread for handling the Fan Accessory */
 static void garage_door_thread_entry(void *p)
 {
+
+    uint8_t mac[6];
+    char TAG[32];
+    esp_read_mac(mac, ESP_MAC_WIFI_STA);
+    snprintf(TAG, 32, "TW-2601-%02X%02X%02X", mac[3], mac[4], mac[5]);
+
     hap_acc_t *accessory;
     hap_serv_t *service;
 
@@ -414,10 +421,10 @@ static void garage_door_thread_entry(void *p)
      */
     hap_acc_cfg_t cfg = {
         .name = "GarageDoorOpener",
-        .manufacturer = "Mason",
-        .model = "Garage Door_V1",
-        .serial_num = "1120260812",
-        .fw_rev = "1.0.2",
+        .manufacturer = "DarkNebulaaa",
+        .model = "HomeKit_Accessory_Controller_V2",
+        .serial_num = TAG,
+        .fw_rev = FW_VERSION,
         .hw_rev = NULL,
         .pv = "1.1.0",
         .identify_routine = garage_door_identify,
@@ -520,6 +527,13 @@ static void garage_door_thread_entry(void *p)
 
 static void watering_thread_entry(void *p)
 {
+
+
+    uint8_t mac[6];
+    char TAG[32];
+    esp_read_mac(mac, ESP_MAC_WIFI_STA);
+    snprintf(TAG, 32, "TW-2601-%02X%02X%02X", mac[3], mac[4], mac[5]);
+
     hap_acc_t *accessory;
     hap_serv_t *service;
 
@@ -536,10 +550,10 @@ static void watering_thread_entry(void *p)
 
     hap_acc_cfg_t cfg = {
         .name = "WateringSystem",
-        .manufacturer = "Mason",
-        .model = "Watering System_V2",
-        .serial_num = "114021159",
-        .fw_rev = "1.0.3",
+        .manufacturer = "DarkNebulaaa",
+        .model = "HomeKit_Accessory_Controller_V2",
+        .serial_num = TAG,
+        .fw_rev = FW_VERSION,
         .hw_rev = NULL,
         .pv = "1.1.0",
         .identify_routine = watering_identify,

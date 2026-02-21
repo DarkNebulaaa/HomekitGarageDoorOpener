@@ -15,9 +15,6 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-#define WIFI_SSID "HOMEKIT_ACCESSORY_CONTROLLER"
-#define WIFI_PASS "hap_esp32"
-
 typedef enum WifiMode {
     RF_MODE_STA = 0,
     RF_MODE_AP = 1,
