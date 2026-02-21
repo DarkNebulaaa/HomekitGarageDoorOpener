@@ -273,6 +273,7 @@ void app_wifi_init(void)
 #ifdef CONFIG_APP_WIFI_USE_HARDCODED
 #define APP_WIFI_SSID   CONFIG_APP_WIFI_SSID
 #define APP_WIFI_PASS   CONFIG_APP_WIFI_PASSWORD
+#endif
 esp_err_t app_wifi_start_custom_wifi(TickType_t ticks_to_wait, char ssid[32], char password[64]){
     wifi_config_t wifi_config = {
         .sta = {
@@ -298,12 +299,7 @@ esp_err_t app_wifi_start_custom_wifi(TickType_t ticks_to_wait, char ssid[32], ch
     return ESP_OK;
 }
 
-esp_err_t app_wifi_start(TickType_t ticks_to_wait)
-{
-        return ESP_OK;
-    //app_wifi_start_custom_wifi(ticks_to_wait, CONFIG_APP_WIFI_SSID, CONFIG_APP_WIFI_PASSWORD);
-}
-#endif
+
 
 #ifdef CONFIG_APP_WIFI_USE_PROVISIONING
 static void wifi_init_sta()
