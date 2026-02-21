@@ -97,6 +97,11 @@ The same pairing code is used for both device types.
 Once paired successfully, the device is ready to use in the Apple Home app.
 
 ---
+## Config 
+
+You can configure the GPIO pin number, AP SSID, and password in config.h.
+
+---
 
 ## About Irrigation System
 
